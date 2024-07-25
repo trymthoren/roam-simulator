@@ -3,7 +3,8 @@ import numpy as np
 
 app = Flask(__name__)
 
-def roam_simulator(T=50, initial_L=1000000, initial_N=1000, initial_Theta=500, A=1, R=10000, O=5000, O_prime=2000, alpha=0.5, beta=0.01, external_shock_time=None, external_shock_magnitude=0):
+def roam_simulator(T=50, initial_L=1000000, initial_N=1000, initial_Theta=500, A=1, R=10000, O=5000, 
+                   O_prime=2000, alpha=0.5, beta=0.01, external_shock_time=None, external_shock_magnitude=0):
     L = [initial_L]
     N = [initial_N]
     Theta = [initial_Theta]
