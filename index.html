@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roam Network Simulator</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Roam Network Simulator</h1>
+    <form id="simulationForm">
+        <label for="T">Simulation Time:</label>
+        <input type="number" id="T" name="T" value="50"><br><br>
+        <label for="initial_L">Initial Tokens:</label>
+        <input type="number" id="initial_L" name="initial_L" value="1000000"><br><br>
+        <label for="initial_N">Initial Miners:</label>
+        <input type="number" id="initial_N" name="initial_N" value="1000"><br><br>
+        <label for="initial_Theta">Initial Validators:</label>
+        <input type="number" id="initial_Theta" name="initial_Theta" value="500"><br><br>
+        <label for="external_shock_time">External Shock Time:</label>
+        <input type="number" id="external_shock_time" name="external_shock_time" value="25"><br><br>
+        <label for="external_shock_magnitude">External Shock Magnitude:</label>
+        <input type="number" id="external_shock_magnitude" name="external_shock_magnitude" value="500"><br><br>
+        <button type="submit">Run Simulation</button>
+    </form>
+    <div id="tokenChart"></div>
+    <div id="priceChart"></div>
+    <div id="minerValidatorChart"></div>
+
+    <script>
+        document.getElementById('simulationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const params = Object.fromEntries(formData.entries());
+            
+            fetch('/simulate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(params),
+            })
+            .then(response => response.json())
+            .then(data => {
+                plotCharts(data);
+            });
+        });
+
+        function plotCharts(data) {
+            const time = data.map(d => d.time);
+            const tokens = data.map(d => d.tokens);
+            const price = data.map(d => d.price);
+            const networkValue = data.map(d => d.networkValue);
+            const miners = data.map(d => d.miners);
+            const validators = data.map(d => d.validators);
+
+            Plotly.newPlot('tokenChart', [{
+                x: time,
+                y: tokens,
+                type: 'scatter',
+                name: 'Tokens'
+            }, {
+                x: time,
+                y: networkValue,
+                type: 'scatter',
+                name: 'Network Value',
+                yaxis: 'y2'
+            }], {
+                title: 'Tokens and Network Value Over Time',
+                yaxis: {title: 'Tokens'},
+                yaxis2: {title: 'Network Value', overlaying: 'y', side: 'right'}
+            });
+
+            Plotly.newPlot('priceChart', [{
+                x: time,
+                y: price,
+                type: 'scatter',
+                name: 'Price'
+            }], {
+                title: 'Token Price Over Time'
+            });
+
+            Plotly.newPlot('minerValidatorChart', [{
+                x: time,
+                y: miners,
+                type: 'scatter',
+                name: 'Miners'
+            }, {
+                x: time,
+                y: validators,
+                type: 'scatter',
+                name: 'Validators'
+            }], {
+                title: 'Miners and Validators Over Time'
+            });
+        }
+    </script>
+</body>
+</html>
