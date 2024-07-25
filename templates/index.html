@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,29 +5,153 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roam Network Simulator</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+        h1, h2 { color: #333; }
+        form { margin-bottom: 20px; background: #f9f9f9; padding: 20px; border-radius: 5px; }
+        label { display: inline-block; width: 200px; margin-bottom: 10px; }
+        input { width: 100px; padding: 5px; }
+        button { margin-top: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        .chart { height: 400px; margin-bottom: 20px; }
+        .parameter-description { margin-left: 200px; color: #666; font-size: 0.9em; margin-bottom: 10px; }
+        #instructions { background-color: #e7f3fe; border-left: 6px solid #2196F3; margin-bottom: 20px; padding: 10px; }
+        .explanation { display: none; background-color: #f1f1f1; padding: 10px; margin-top: 5px; border-radius: 4px; }
+        .show-explanation { font-size: 0.8em; color: #0066cc; cursor: pointer; }
+        .show-explanation:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
     <h1>Roam Network Simulator</h1>
+    
+    <div id="instructions">
+        <h2>How to Use</h2>
+        <ol>
+            <li>Adjust the parameters below to simulate different network conditions.</li>
+            <li>Click on "Learn More" next to each parameter to understand its impact.</li>
+            <li>Click "Run Simulation" to see the results.</li>
+            <li>Observe how changes in parameters affect token circulation, price, network value, and participant numbers.</li>
+            <li>Experiment with different scenarios to understand network dynamics.</li>
+        </ol>
+    </div>
+
     <form id="simulationForm">
         <label for="T">Simulation Time:</label>
-        <input type="number" id="T" name="T" value="50"><br><br>
+        <input type="number" id="T" name="T" value="50">
+        <span class="show-explanation" onclick="toggleExplanation('time-explanation')">Learn More</span>
+        <div id="time-explanation" class="explanation">
+            <strong>Definition:</strong> The number of discrete time steps the simulation will run.<br>
+            <strong>Significance:</strong>
+            <ul>
+                <li>Longer simulation times allow for observing long-term trends and equilibrium states.</li>
+                <li>Shorter times are useful for analyzing immediate effects of parameter changes.</li>
+            </ul>
+            <strong>Impact:</strong>
+            <ul>
+                <li>Affects the granularity and duration of all other observed variables.</li>
+                <li>Longer simulations may reveal emergent behaviors not visible in shorter runs.</li>
+            </ul>
+        </div>
+
         <label for="initial_L">Initial Tokens:</label>
-        <input type="number" id="initial_L" name="initial_L" value="1000000"><br><br>
+        <input type="number" id="initial_L" name="initial_L" value="1000000">
+        <span class="show-explanation" onclick="toggleExplanation('tokens-explanation')">Learn More</span>
+        <div id="tokens-explanation" class="explanation">
+            <strong>Definition:</strong> The total number of tokens in circulation at the start of the simulation.<br>
+            <strong>Significance:</strong>
+            <ul>
+                <li>Represents the initial money supply in the Roam network economy.</li>
+                <li>Influences initial token price and network value.</li>
+            </ul>
+            <strong>Impact:</strong>
+            <ul>
+                <li>A larger initial token supply may lead to lower initial token prices but potentially higher network value.</li>
+                <li>Affects the rate of token inflation/deflation throughout the simulation.</li>
+            </ul>
+        </div>
+
         <label for="initial_N">Initial Miners:</label>
-        <input type="number" id="initial_N" name="initial_N" value="1000"><br><br>
+        <input type="number" id="initial_N" name="initial_N" value="1000">
+        <span class="show-explanation" onclick="toggleExplanation('miners-explanation')">Learn More</span>
+        <div id="miners-explanation" class="explanation">
+            <strong>Definition:</strong> The number of miners participating in the network at the beginning of the simulation.<br>
+            <strong>Significance:</strong>
+            <ul>
+                <li>Miners are crucial for network security and transaction processing.</li>
+                <li>Represents the initial computational power of the network.</li>
+            </ul>
+            <strong>Impact:</strong>
+            <ul>
+                <li>More miners generally lead to increased network security and potentially higher network value.</li>
+                <li>Affects the distribution of mining rewards and network decentralization.</li>
+            </ul>
+        </div>
+
         <label for="initial_Theta">Initial Validators:</label>
-        <input type="number" id="initial_Theta" name="initial_Theta" value="500"><br><br>
+        <input type="number" id="initial_Theta" name="initial_Theta" value="500">
+        <span class="show-explanation" onclick="toggleExplanation('validators-explanation')">Learn More</span>
+        <div id="validators-explanation" class="explanation">
+            <strong>Definition:</strong> The number of validators in the network at the start of the simulation.<br>
+            <strong>Significance:</strong>
+            <ul>
+                <li>Validators play a role in consensus mechanisms and network governance.</li>
+                <li>Represents the initial level of participation in network validation.</li>
+            </ul>
+            <strong>Impact:</strong>
+            <ul>
+                <li>Higher validator counts may increase network reliability and governance participation.</li>
+                <li>Influences the distribution of validation rewards and the speed of consensus.</li>
+            </ul>
+        </div>
+
         <label for="external_shock_time">External Shock Time:</label>
-        <input type="number" id="external_shock_time" name="external_shock_time" value="25"><br><br>
+        <input type="number" id="external_shock_time" name="external_shock_time" value="25">
+        <span class="show-explanation" onclick="toggleExplanation('shock-time-explanation')">Learn More</span>
+        <div id="shock-time-explanation" class="explanation">
+            <strong>Definition:</strong> The specific time step at which an external event impacts the network.<br>
+            <strong>Significance:</strong>
+            <ul>
+                <li>Simulates real-world events that can suddenly affect network dynamics.</li>
+                <li>Allows for testing network resilience and recovery capabilities.</li>
+            </ul>
+            <strong>Impact:</strong>
+            <ul>
+                <li>Can cause abrupt changes in miner/validator numbers, token price, or network value.</li>
+                <li>Useful for analyzing how the network responds to and recovers from unexpected events.</li>
+            </ul>
+        </div>
+
         <label for="external_shock_magnitude">External Shock Magnitude:</label>
-        <input type="number" id="external_shock_magnitude" name="external_shock_magnitude" value="500"><br><br>
+        <input type="number" id="external_shock_magnitude" name="external_shock_magnitude" value="500">
+        <span class="show-explanation" onclick="toggleExplanation('shock-magnitude-explanation')">Learn More</span>
+        <div id="shock-magnitude-explanation" class="explanation">
+            <strong>Definition:</strong> The size of the impact caused by the external shock, measured in changes to miner numbers.<br>
+            <strong>Significance:</strong>
+            <ul>
+                <li>Represents the severity of the external event.</li>
+                <li>Allows for simulating various scenarios from minor disturbances to major crises.</li>
+            </ul>
+            <strong>Impact:</strong>
+            <ul>
+                <li>Large magnitudes can significantly alter network composition and performance.</li>
+                <li>Helps in understanding the network's stability and its ability to handle different levels of disruption.</li>
+            </ul>
+        </div>
+
         <button type="submit">Run Simulation</button>
     </form>
-    <div id="tokenChart"></div>
-    <div id="priceChart"></div>
-    <div id="minerValidatorChart"></div>
+
+    <h2>Simulation Results</h2>
+    <div id="tokenChart" class="chart"></div>
+    <div id="priceChart" class="chart"></div>
+    <div id="minerValidatorChart" class="chart"></div>
 
     <script>
+        function toggleExplanation(id) {
+            var explanation = document.getElementById(id);
+            explanation.style.display = explanation.style.display === 'none' ? 'block' : 'none';
+        }
+
         document.getElementById('simulationForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
