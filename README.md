@@ -1,2 +1,2 @@
 # roam-simulator
-Simulate the roam network earnings
+Simulate different variables on the  $roam network on solana
